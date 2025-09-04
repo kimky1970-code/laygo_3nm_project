@@ -1,4 +1,4 @@
-# 3nm NSFET 공정을 위한 Laygo2 기술 파라미터 파일 (완성본)
+# 3nm NSFET 공정을 위한 Laygo2 기술 파라미터 파일 
 
 export:
   target: mpl
@@ -15,6 +15,7 @@ export:
       VBPR: ["lightgreen", "none", 1]
       V0A: ["darkblue", "darkblue", 1]
       V0B: ["cyan", "cyan", 1]
+      prAnnotation: ["none", "none", 0] # Annotation Layer for text
       prBoundary: ["darkgray", "none", 0.3]
 
     # 레이어를 그리는 순서 정의 (아래에 있을수록 위쪽에 그려짐)
@@ -30,23 +31,24 @@ export:
       - M1
       - VBPR
       - MBPR
+      - prAnnotation
       - text
 
 mpl: *laygo2_tech_mpl
 
 grids:
   # 1. 셀 배치를 위한 기본 그리드
-  placement_grid:
+  placement:
     type: placement
     vertical:
-      scope: [0, 200]  # 셀의 가로 크기 범위 (임의 설정)
+      scope: [0, 500]  # 셀의 가로 크기 범위 (임의 설정)
       elements: [0]
     horizontal:
       scope: [0, 173.5] # 셀 높이: 173.5 nm
       elements: [0]
 
   # 2. GCON(수평)과 M0A(수직) 라우팅 그리드
-  routing_GCON_M0A:
+  routing_1_2:
     type: routing
     vertical:
       layer: [M0A, drawing]
@@ -57,10 +59,10 @@ grids:
     primary_grid: vertical
     via:
       map:
-        - [via_gcon_m0a_default]
+        - [via_1_2_default]
 
   # 3. M0A(수직)와 M0B(수평) 라우팅 그리드
-  routing_M0A_M0B:
+  routing_2_3:
     type: routing
     vertical:
       layer: [M0A, drawing]
@@ -72,26 +74,26 @@ grids:
     primary_grid: vertical
     via:
       map:             # V0A (13x13)에 해당
-        - [via_m0a_m0b_default] 
+        - [via_2_3_default]
 
   # 4. M0B(수평)와 M1(수평) 라우팅 그리드 (V0B를 통해 연결)
-  # 참고: M0B와 M1은 둘 다 수평 배선에 주로 사용될 수 있으나,
-  #       V0B를 통해 M0B에서 상위 M1으로 연결하는 규칙을 정의합니다.
-  routing_M0B_M1:
+  routing_3_4:
     type: routing
-    vertical:
-      # 이 그리드에서는 수직 레이어를 사용하지 않음
+    vertical: # 이 그리드에서는 M1을 수직으로도 사용할 수 있도록 정의
+      layer: [M1, drawing]
+      width: [14]
+      spacing: [14]
     horizontal:
-      layer:
-        - [M0B, drawing]
-        - [metal1, drawing]
-      width: [12, 14]   # M0B 폭: 12 nm, M1 폭: 14 nm
+      layer: [M0B, drawing]
+      width: [12]
+      spacing: [12]
+    primary_grid: horizontal
     via:
       map:             # V0B (10x14)에 해당
-        - [via_m0b_m1_default]
+        - [via_3_4_default]
 
   # 5. M0A(수직)와 M1(수평) 라우팅 그리드 (주 배선용)
-  routing_M0A_M1:
+  routing_2_4:
     type: routing
     vertical:
       layer: [M0A, drawing]
@@ -103,10 +105,10 @@ grids:
     primary_grid: horizontal
     via:
       map:
-        - [via_m0a_m1_default] # V0A 또는 M0B-V0B-M1 경로를 통해 연결됨
+        - [via_2_4_default]
 
   # 6. M0A(수직)와 MBPR(수평 파워레일) 라우팅 그리드
-  routing_M0A_MBPR:
+  routing_2_p:
     type: routing
     vertical:
       layer: [M0A, drawing]
@@ -117,4 +119,4 @@ grids:
     primary_grid: horizontal
     via:
       map:             # VBPR에 해당
-        - [via_m0a_mbpr_default]
+        - [via_2_p_default]
