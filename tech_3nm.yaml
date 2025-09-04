@@ -1,0 +1,120 @@
+# 3nm NSFET 공정을 위한 Laygo2 기술 파라미터 파일 (완성본)
+
+export:
+  target: mpl
+  mpl: &laygo2_tech_mpl
+    # 레이어 색상 및 투명도 정의
+    colormap:
+      MBPR: ["gray", "gray", 0.5]
+      Gate: ["red", "red", 0.5]
+      M1: ["blue", "blue", 0.5]
+      M0A: ["orange", "orange", 0.5]
+      M0B: ["purple", "purple", 0.5]
+      Sheet: ["green", "green", 0.5]
+      GCON: ["yellow", "yellow", 0.5]
+      VBPR: ["lightgreen", "none", 1]
+      V0A: ["darkblue", "darkblue", 1]
+      V0B: ["cyan", "cyan", 1]
+      prBoundary: ["darkgray", "none", 0.3]
+
+    # 레이어를 그리는 순서 정의 (아래에 있을수록 위쪽에 그려짐)
+    order:
+      - prBoundary
+      - Sheet
+      - Gate
+      - GCON
+      - M0A
+      - V0A
+      - M0B
+      - V0B
+      - M1
+      - VBPR
+      - MBPR
+      - text
+
+mpl: *laygo2_tech_mpl
+
+grids:
+  # 1. 셀 배치를 위한 기본 그리드
+  placement_grid:
+    type: placement
+    vertical:
+      scope: [0, 200]  # 셀의 가로 크기 범위 (임의 설정)
+      elements: [0]
+    horizontal:
+      scope: [0, 173.5] # 셀 높이: 173.5 nm
+      elements: [0]
+
+  # 2. GCON(수평)과 M0A(수직) 라우팅 그리드
+  routing_GCON_M0A:
+    type: routing
+    vertical:
+      layer: [M0A, drawing]
+      width: [15]      # M0A 폭: 15 nm
+    horizontal:
+      layer: [GCON, drawing]
+      width: [14]      # GCON 폭: 14 nm (표에 없어 M1과 유사하게 가정)
+    primary_grid: vertical
+    via:
+      map:
+        - [via_gcon_m0a_default]
+
+  # 3. M0A(수직)와 M0B(수평) 라우팅 그리드
+  routing_M0A_M0B:
+    type: routing
+    vertical:
+      layer: [M0A, drawing]
+      width: [15]      # M0A 폭: 15 nm
+    horizontal:
+      layer: [M0B, drawing]
+      width: [12]      # M0B 폭: 12 nm
+      spacing: [12]    # M0B 간격: 12 nm
+    primary_grid: vertical
+    via:
+      map:             # V0A (13x13)에 해당
+        - [via_m0a_m0b_default] 
+
+  # 4. M0B(수평)와 M1(수평) 라우팅 그리드 (V0B를 통해 연결)
+  # 참고: M0B와 M1은 둘 다 수평 배선에 주로 사용될 수 있으나,
+  #       V0B를 통해 M0B에서 상위 M1으로 연결하는 규칙을 정의합니다.
+  routing_M0B_M1:
+    type: routing
+    vertical:
+      # 이 그리드에서는 수직 레이어를 사용하지 않음
+    horizontal:
+      layer:
+        - [M0B, drawing]
+        - [metal1, drawing]
+      width: [12, 14]   # M0B 폭: 12 nm, M1 폭: 14 nm
+    via:
+      map:             # V0B (10x14)에 해당
+        - [via_m0b_m1_default]
+
+  # 5. M0A(수직)와 M1(수평) 라우팅 그리드 (주 배선용)
+  routing_M0A_M1:
+    type: routing
+    vertical:
+      layer: [M0A, drawing]
+      width: [15]      # M0A 폭: 15 nm
+    horizontal:
+      layer: [metal1, drawing]
+      width: [14]      # Metal-1 폭: 14 nm
+      spacing: [14]    # Metal-1 간격: 14 nm
+    primary_grid: horizontal
+    via:
+      map:
+        - [via_m0a_m1_default] # V0A 또는 M0B-V0B-M1 경로를 통해 연결됨
+
+  # 6. M0A(수직)와 MBPR(수평 파워레일) 라우팅 그리드
+  routing_M0A_MBPR:
+    type: routing
+    vertical:
+      layer: [M0A, drawing]
+      width: [15]      # M0A 폭: 15 nm
+    horizontal:
+      layer: [MBPR, drawing]
+      width: [31.5]    # BPR 폭: 31.5 nm
+    primary_grid: horizontal
+    via:
+      map:             # VBPR에 해당
+        - [via_m0a_mbpr_default]
