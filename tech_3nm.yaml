@@ -1,122 +1,277 @@
-# 3nm NSFET 공정을 위한 Laygo2 기술 파라미터 파일 
-
+# Technology parameters for the advanced example technology.
 export:
-  target: mpl
-  mpl: &laygo2_tech_mpl
-    # 레이어 색상 및 투명도 정의
-    colormap:
-      MBPR: ["gray", "gray", 0.5]
-      Gate: ["red", "red", 0.5]
-      M1: ["blue", "blue", 0.5]
-      M0A: ["orange", "orange", 0.5]
-      M0B: ["purple", "purple", 0.5]
-      Sheet: ["green", "green", 0.5]
-      GCON: ["yellow", "yellow", 0.5]
-      VBPR: ["lightgreen", "none", 1]
-      V0A: ["darkblue", "darkblue", 1]
-      V0B: ["cyan", "cyan", 1]
-      prAnnotation: ["none", "none", 0] # Annotation Layer for text
-      prBoundary: ["darkgray", "none", 0.3]
-
-    # 레이어를 그리는 순서 정의 (아래에 있을수록 위쪽에 그려짐)
-    order:
-      - prBoundary
-      - Sheet
-      - Gate
-      - GCON
-      - M0A
-      - V0A
-      - M0B
-      - V0B
-      - M1
-      - VBPR
-      - MBPR
-      - prAnnotation
-      - text
-
+    target: mpl
+    mpl: &laygo2_tech_mpl
+      colormap:
+        prBoundary: ["darkgray", "none", 0.3]
+        nwell: ["yellowgreen", "none", 0.3]
+        pimplant: ["tomato", "none", 0.3]
+        nimplant: ["olive", "none", 0.3]
+        diffusion: ["r", "r", 0.5]
+        poly: ["b", "b", 0.3]
+        metal1: ["c", "c", 0.5]
+        metal2: ["y", "y", 0.5]
+        metal3: ["g", "g", 0.5]
+        metal4: ["m", "m", 0.5]
+        via1: ["indigo", "indigo", 1]
+        via2: ["navy", "navy", 1]
+        via3: ["olive", "olive", 1]
+        __instance__: ["black", "none", 1]
+        __instance_pin__: ["gray", "none", 1]
+      order:
+        - __instance__
+        - __instance_pin__
+        - prBoundary
+        - nwell
+        - pimplant
+        - nimplant
+        - diffusion
+        - poly
+        - metal1
+        - via1
+        - metal2
+        - via2
+        - metal3
+        - via3
+        - metal4
+        - text
 mpl: *laygo2_tech_mpl
-
 grids:
-  # 1. 셀 배치를 위한 기본 그리드
-  placement:
+  placement_basic:
     type: placement
     vertical:
-      scope: [0, 500]  # 셀의 가로 크기 범위 (임의 설정)
+      scope: [0, 15]
       elements: [0]
     horizontal:
-      scope: [0, 173.5] # 셀 높이: 173.5 nm
+      scope: [0, 10]
       elements: [0]
-
-  # 2. GCON(수평)과 M0A(수직) 라우팅 그리드
-  routing_1_2:
+  placement_cmos:
+    type: placement
+    vertical:
+      scope: [0, 30]
+      elements: [0]
+    horizontal:
+      scope: [0, 100]
+      elements: [0]
+  routing_12_mos:
     type: routing
     vertical:
-      layer: [M0A, drawing]
-      width: [15]      # M0A 폭: 15 nm
-    horizontal:
-      layer: [GCON, drawing]
-      width: [14]      # GCON 폭: 14 nm (표에 없어 M1과 유사하게 가정)
-    primary_grid: vertical
-    via:
-      map:
-        - [via_1_2_default]
-
-  # 3. M0A(수직)와 M0B(수평) 라우팅 그리드
-  routing_2_3:
-    type: routing
-    vertical:
-      layer: [M0A, drawing]
-      width: [15]      # M0A 폭: 15 nm
-    horizontal:
-      layer: [M0B, drawing]
-      width: [12]      # M0B 폭: 12 nm
-      spacing: [12]    # M0B 간격: 12 nm
-    primary_grid: vertical
-    via:
-      map:             # V0A (13x13)에 해당
-        - [via_2_3_default]
-
-  # 4. M0B(수평)와 M1(수평) 라우팅 그리드 (V0B를 통해 연결)
-  routing_3_4:
-    type: routing
-    vertical: # 이 그리드에서는 M1을 수직으로도 사용할 수 있도록 정의
-      layer: [M1, drawing]
+      scope: [0, 30]
+      elements: [0]
+      layer:
+        - [metal1, drawing]
+      pin_layer:
+        - [metal1, pin]
       width: [14]
-      spacing: [14]
+      extension: [15]
     horizontal:
-      layer: [M0B, drawing]
-      width: [12]
-      spacing: [12]
-    primary_grid: horizontal
-    via:
-      map:             # V0B (10x14)에 해당
-        - [via_3_4_default]
-
-  # 5. M0A(수직)와 M1(수평) 라우팅 그리드 (주 배선용)
-  routing_2_4:
-    type: routing
-    vertical:
-      layer: [M0A, drawing]
-      width: [15]      # M0A 폭: 15 nm
-    horizontal:
-      layer: [metal1, drawing]
-      width: [14]      # Metal-1 폭: 14 nm
-      spacing: [14]    # Metal-1 간격: 14 nm
-    primary_grid: horizontal
+      scope: [0, 100]
+      elements: [0, 30, 50, 80]
+      layer:
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+      pin_layer:
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+      width: [10, 10, 10, 10]
+      extension: [15, 15, 15, 15]
+    primary_grid: horizontal  # the primary routing direction
     via:
       map:
-        - [via_2_4_default]
-
-  # 6. M0A(수직)와 MBPR(수평 파워레일) 라우팅 그리드
-  routing_2_p:
+        - [via_r12_default, via_r12_default, via_r12_default, via_r12_default]
+  routing_12_mos_flipped:
     type: routing
     vertical:
-      layer: [M0A, drawing]
-      width: [15]      # M0A 폭: 15 nm
+      scope: [0, 30]
+      elements: [0]
+      layer:
+        - [metal1, drawing]
+      pin_layer:
+        - [metal1, pin]
+      width: [14]
+      extension: [15]
     horizontal:
-      layer: [MBPR, drawing]
-      width: [31.5]    # BPR 폭: 31.5 nm
-    primary_grid: horizontal
+      scope: [0, 100]
+      elements: [0, 20, 50, 70]
+      layer:
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+      pin_layer:
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+      width: [10, 10, 10, 10]
+      extension: [15, 15, 15, 15]
+    primary_grid: horizontal  # the primary routing direction
     via:
-      map:             # VBPR에 해당
-        - [via_2_p_default]
+      map:
+        - [via_r12_default, via_r12_default, via_r12_default, via_r12_default]
+  routing_12_cmos:
+    type: routing
+    vertical:
+      scope: [0, 30]
+      elements: [0]
+      layer:
+        - [metal1, drawing]
+      pin_layer:
+        - [metal1, pin]
+      width: [14]
+      extension: [15]
+    horizontal:
+      scope: [0, 200]
+      elements: [0, 30, 50, 80, 120, 150, 170]
+      layer:
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+      pin_layer:
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+      width: [10, 10, 10, 10, 10, 10, 10, 10]
+      extension: [15, 15, 15, 15, 15, 15, 15, 15]
+    primary_grid: horizontal  # the primary routing direction
+    via:
+      map:
+        - [via_r12_default, via_r12_default, via_r12_default, via_r12_default,
+           via_r12_default, via_r12_default, via_r12_default, via_r12_default]
+  routing_23_mos:
+    type: routing
+    vertical:
+      scope: [0, 30]
+      elements: [0]
+      layer:
+        - [metal3, drawing]
+      pin_layer:
+        - [metal3, pin]
+      width: [10]
+      extension: [15]
+    horizontal:
+      scope: [0, 100]
+      elements: [0, 30, 50, 80]
+      layer:
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+      pin_layer:
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+      width: [10, 10, 10, 10]
+      extension: [15, 15, 15, 15]
+    primary_grid: horizontal  # the primary routing direction
+    via:
+      map:
+        - [via_r23_default, via_r23_default, via_r23_default, via_r23_default]
+  routing_23_mos_flipped:
+    type: routing
+    vertical:
+      scope: [0, 30]
+      elements: [0]
+      layer:
+        - [metal3, drawing]
+      pin_layer:
+        - [metal3, pin]
+      width: [10]
+      extension: [15]
+    horizontal:
+      scope: [0, 100]
+      elements: [0, 20, 50, 70]
+      layer:
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+      pin_layer:
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+      width: [10, 10, 10, 10]
+      extension: [15, 15, 15, 15]
+    primary_grid: horizontal  # the primary routing direction
+    via:
+      map:
+        - [via_r23_default, via_r23_default, via_r23_default, via_r23_default]
+  routing_23_cmos:
+    type: routing
+    vertical:
+      scope: [0, 30]
+      elements: [0]
+      layer:
+        - [metal3, drawing]
+      pin_layer:
+        - [metal3, pin]
+      width: [10]
+      extension: [15]
+    horizontal:
+      scope: [0, 200]
+      elements: [0, 30, 50, 80, 120, 150, 170]
+      layer:
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+        - [metal2, drawing]
+      pin_layer:
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+        - [metal2, pin]
+      width: [10, 10, 10, 10, 10, 10, 10, 10]
+      extension: [15, 15, 15, 15, 15, 15, 15, 15]
+    primary_grid: horizontal  # the primary routing direction
+    via:
+      map:
+        - [via_r23_default, via_r23_default, via_r23_default, via_r23_default,
+           via_r23_default, via_r23_default, via_r23_default, via_r23_default]
+  routing_34_basic:
+    type: routing
+    vertical:
+      scope: [0, 30]
+      elements: [0]
+      layer:
+        - [metal3, drawing]
+      pin_layer:
+        - [metal3, pin]
+      width: [10]
+      extension: [15]
+    horizontal:
+      scope: [0, 20]
+      elements: [0]
+      layer:
+        - [metal4, drawing]
+      pin_layer:
+        - [metal4, pin]
+      width: [10]
+      extension: [15]
+    primary_grid: horizontal  # the primary routing direction
+    via:
+      map:
+        - [via_r34_default]
