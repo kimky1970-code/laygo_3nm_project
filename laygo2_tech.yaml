@@ -36,6 +36,7 @@ export:
         - metal4
         - text
 mpl: *laygo2_tech_mpl
+
 grids:
   placement_basic:
     type: placement
@@ -275,3 +276,4 @@ grids:
     via:
       map:
         - [via_r34_default]
+
